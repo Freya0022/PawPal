@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -85,6 +86,7 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
     // 注意：SavedPets不是底部导航栏的一部分，而是从AvailablePets可以访问的页面
     object SavedPets : Screen("savedPets", "Saved Pets", { Icon(Icons.Filled.Favorite, contentDescription = "Saved Pets") })
     // 添加Report页面路由
+    object PostPet : Screen("PostPet", "PostPet", {})
     object AdoptionStats : Screen("adoptionStats", "Adoption Stats", { Icon(Icons.Filled.List, contentDescription = "Adoption Stats") })
 }
 
@@ -106,26 +108,6 @@ fun PetApp() {
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("Explore") },
-//                navigationIcon = {
-//                    IconButton(
-//                        onClick = { /* Handle back navigation if needed */ }
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.ArrowBack,
-//                            contentDescription = "Back",
-//                            tint = MaterialTheme.colorScheme.onPrimary
-//                        )
-//                    }
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = MaterialTheme.colorScheme.primary,
-//                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-//                )
-//            )
-//        },
         bottomBar = {
             // 只在指定的三个主页面显示底部导航栏
             val bottomNavRoutes = listOf(
@@ -171,12 +153,14 @@ fun PetApp() {
         ) {
             // Available Pets页面
             composable(Screen.AvailablePets.route) {
-//                AvailablePetsScreen(
-//                    onSavedPetsClick = {
-//                        navController.navigate(Screen.SavedPets.route)
-//                    }
-//                )
-                PostPetScreen()
+                AvailablePetsScreen(
+                    onSavedPetsClick = {
+                        navController.navigate(Screen.SavedPets.route)
+                    },
+                    onPostPetClick = {
+                        navController.navigate(Screen.PostPet.route)
+                    }
+                )
             }
 
             // Saved Pets页面
@@ -228,6 +212,10 @@ fun PetApp() {
                     }
                 )
             }
+
+            composable(Screen.PostPet.route) {
+                PostPetScreen()
+            }
         }
     }
 }
@@ -236,7 +224,7 @@ fun PetApp() {
 // 临时的Available Pets屏幕，未来会被真实实现替代
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AvailablePetsScreen(onSavedPetsClick: () -> Unit) {
+fun AvailablePetsScreen(onSavedPetsClick: () -> Unit, onPostPetClick : () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -251,6 +239,13 @@ fun AvailablePetsScreen(onSavedPetsClick: () -> Unit) {
                         Icon(
                             imageVector = Icons.Default.Favorite,
                             contentDescription = "Saved Pets",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onPostPetClick) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Post Pet",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
